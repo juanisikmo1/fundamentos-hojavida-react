@@ -1,71 +1,69 @@
-import React from "react";
 function FormularioDatos({ datos, setDatos, siguiente }) {
-
-  const [errores, setErrores] = React.useState({});
 
   const actualizar = (campo, valor) => {
     setDatos((anterior) => ({
       ...anterior,
       [campo]: valor
     }));
-
-    if (errores[campo]) {
-      setErrores((anterior) => ({
-        ...anterior,
-        [campo]: ""
-      }));
-    }
-  };
-
-  const validar = () => {
-
-    const nuevosErrores = {};
-
-    if (!datos.nombre || !datos.nombre.trim()) {
-      nuevosErrores.nombre = "Debe ingresar su nombre completo.";
-    }
-
-    if (datos.edad === "" || datos.edad === undefined) {
-      nuevosErrores.edad = "Debe ingresar su edad.";
-    } else if (Number(datos.edad) < 0 || Number(datos.edad) > 100) {
-      nuevosErrores.edad = "La edad debe estar entre 0 y 100 años.";
-    }
-
-    if (!datos.ciudad || !datos.ciudad.trim()) {
-      nuevosErrores.ciudad = "Debe ingresar su ciudad.";
-    }
-
-    if (!datos.programa || !datos.programa.trim()) {
-      nuevosErrores.programa = "Debe ingresar el programa de formación.";
-    }
-
-    if (!datos.correo || !datos.correo.trim()) {
-      nuevosErrores.correo = "Debe ingresar su correo electrónico.";
-    } else if (datos.correo.length > 50) {
-      nuevosErrores.correo =
-        "El correo no puede superar los 50 caracteres.";
-    } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.correo)
-    ) {
-      nuevosErrores.correo =
-        "Ingrese un correo electrónico válido.";
-    }
-
-    if (!datos.ficha || !datos.ficha.trim()) {
-      nuevosErrores.ficha = "Debe ingresar el número de ficha.";
-    }
-
-    setErrores(nuevosErrores);
-
-    return Object.keys(nuevosErrores).length === 0;
   };
 
   const continuar = (e) => {
     e.preventDefault();
 
-    if (validar()) {
-      siguiente();
+    if (!datos.nombre || !datos.nombre.trim()) {
+      alert("Debe ingresar su nombre completo.");
+      return;
     }
+
+    if (datos.edad === "" || datos.edad === undefined) {
+      alert("Debe ingresar su edad.");
+      return;
+    }
+
+    if (Number(datos.edad) < 0 || Number(datos.edad) > 100) {
+      alert("La edad debe estar entre 0 y 100 años.");
+      return;
+    }
+
+    if (!datos.ciudad || !datos.ciudad.trim()) {
+      alert("Debe ingresar su ciudad.");
+      return;
+    }
+
+    if (!datos.programa || !datos.programa.trim()) {
+      alert("Debe ingresar el programa de formación.");
+      return;
+    }
+
+    if (!datos.correo || !datos.correo.trim()) {
+      alert("Debe ingresar su correo electrónico.");
+      return;
+    }
+
+    if (datos.correo.length > 50) {
+      alert("El correo no puede superar los 50 caracteres.");
+      return;
+    }
+
+    const correoValido =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.correo);
+
+    if (!correoValido) {
+      alert("Ingrese un correo electrónico válido.");
+      return;
+    }
+
+    if (!datos.ficha || !datos.ficha.trim()) {
+      alert("Debe ingresar el número de ficha.");
+      return;
+    }
+
+    if (!datos.jornada) {
+      alert("Debe seleccionar una jornada.");
+      return;
+    }
+
+    siguiente();
   };
 
   return (
@@ -93,6 +91,7 @@ function FormularioDatos({ datos, setDatos, siguiente }) {
             }}
           />
         </div>
+
         <div className="grupo">
           <label>Nombre Completo</label>
 
@@ -104,13 +103,8 @@ function FormularioDatos({ datos, setDatos, siguiente }) {
               actualizar("nombre", e.target.value)
             }
           />
-
-          {errores.nombre && (
-            <span className="error">
-              {errores.nombre}
-            </span>
-          )}
         </div>
+
         <div className="grupo">
           <label>Edad</label>
 
@@ -124,13 +118,8 @@ function FormularioDatos({ datos, setDatos, siguiente }) {
               actualizar("edad", e.target.value)
             }
           />
-
-          {errores.edad && (
-            <span className="error">
-              {errores.edad}
-            </span>
-          )}
         </div>
+
         <div className="grupo">
           <label>Ciudad</label>
 
@@ -142,13 +131,8 @@ function FormularioDatos({ datos, setDatos, siguiente }) {
               actualizar("ciudad", e.target.value)
             }
           />
-
-          {errores.ciudad && (
-            <span className="error">
-              {errores.ciudad}
-            </span>
-          )}
         </div>
+
         <div className="grupo">
           <label>Programa de formación</label>
 
@@ -160,13 +144,8 @@ function FormularioDatos({ datos, setDatos, siguiente }) {
               actualizar("programa", e.target.value)
             }
           />
-
-          {errores.programa && (
-            <span className="error">
-              {errores.programa}
-            </span>
-          )}
         </div>
+
         <div className="grupo">
           <label>Correo Electrónico</label>
 
@@ -179,17 +158,8 @@ function FormularioDatos({ datos, setDatos, siguiente }) {
               actualizar("correo", e.target.value)
             }
           />
-
-          <small>
-            Máximo 50 caracteres
-          </small>
-
-          {errores.correo && (
-            <span className="error">
-              {errores.correo}
-            </span>
-          )}
         </div>
+
         <div className="grupo">
           <label>Número de Ficha</label>
 
@@ -202,13 +172,8 @@ function FormularioDatos({ datos, setDatos, siguiente }) {
               actualizar("ficha", e.target.value)
             }
           />
-
-          {errores.ficha && (
-            <span className="error">
-              {errores.ficha}
-            </span>
-          )}
         </div>
+
         <div className="grupo">
           <label>Jornada</label>
 
@@ -221,25 +186,20 @@ function FormularioDatos({ datos, setDatos, siguiente }) {
             <option value="">
               Seleccione una jornada
             </option>
+
             <option>Mañana</option>
             <option>Tarde</option>
             <option>Noche</option>
             <option>Mixta</option>
           </select>
-
-          {errores.jornada && (
-            <span className="error">
-              {errores.jornada}
-            </span>
-          )}
         </div>
-
 
         <button type="submit">
           Continuar Registro
         </button>
 
       </form>
+
     </div>
   );
 }

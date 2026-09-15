@@ -8,27 +8,18 @@ function FormularioAcademico({
 }) {
 
   const [nuevoCurso, setNuevoCurso] = useState("");
-  const [errores, setErrores] = useState({});
 
   const actualizar = (campo, valor) => {
-
     setDatos((anterior) => ({
       ...anterior,
       [campo]: valor
     }));
-
-    if (errores[campo]) {
-      setErrores((anterior) => ({
-        ...anterior,
-        [campo]: ""
-      }));
-    }
   };
 
   const agregarCurso = () => {
 
     if (!nuevoCurso.trim()) {
-      alert("Debe escribir el nombre del curso.");
+      alert("Debe ingresar el nombre del curso.");
       return;
     }
 
@@ -38,11 +29,11 @@ function FormularioAcademico({
         ...(anterior.cursos || []),
         nuevoCurso.trim()
       ]
-    }));
+    }));  
 
     setNuevoCurso("");
-  };
 
+  };
   const eliminarCurso = (indice) => {
     setDatos((anterior) => ({
       ...anterior,
@@ -52,43 +43,50 @@ function FormularioAcademico({
     }));
   };
 
+  const continuar = (e) => {
 
-  const validar = () => {
+    e.preventDefault();
 
-    const nuevosErrores = {};
+    if (!datos.nivel) {
+      alert("Debe seleccionar el nivel de formación.");
+      return;
+    }
 
     if (!datos.titulo || !datos.titulo.trim()) {
-      nuevosErrores.titulo =
-        "Debe ingresar el título obtenido.";
-    }
-
-    if (!datos.institucion || !datos.institucion.trim()) {
-      nuevosErrores.institucion =
-        "Debe ingresar la institución educativa.";
-    }
-
-    if (!datos.graduacion) {
-      nuevosErrores.graduacion =
-        "Debe ingresar el año de graduación.";
+      alert("Debe ingresar el título obtenido.");
+      return;
     }
 
     if (!datos.cursos || datos.cursos.length === 0) {
-      nuevosErrores.cursos =
-        "Debe agregar al menos un curso.";
+      alert("Debe agregar al menos un curso realizado.");
+      return;
     }
 
-    setErrores(nuevosErrores);
-
-    return Object.keys(nuevosErrores).length === 0;
-  };
-
-
-  const continuar = (e) => {
-    e.preventDefault();
-
-    if (validar()) {
-      siguiente();
+    if (
+      !datos.institucion ||
+      !datos.institucion.trim()
+    ) {
+      alert("Debe ingresar la institución educativa.");
+      return;
     }
+
+    if (!datos.graduacion) {
+      alert("Debe ingresar el año de graduación.");
+      return;
+    }
+
+    const año = Number(datos.graduacion);
+
+    if (año < 1950 || año > 2026) {
+      alert(
+        "El año de graduación debe estar entre 1950 y 2026."
+      );
+      return;
+    }
+
+    alert("Información académica guardada correctamente.");
+
+    siguiente();
   };
 
   return (
@@ -97,7 +95,6 @@ function FormularioAcademico({
       <h2>Información Académica</h2>
 
       <form onSubmit={continuar}>
-
         <div className="grupo">
 
           <label>Nivel de Formación</label>
@@ -112,9 +109,18 @@ function FormularioAcademico({
               Seleccione un nivel
             </option>
 
-            <option>Técnico</option>
-            <option>Tecnólogo</option>
-            <option>Profesional</option>
+            <option value="Técnico">
+              Técnico
+            </option>
+
+            <option value="Tecnólogo">
+              Tecnólogo
+            </option>
+
+            <option value="Profesional">
+              Profesional
+            </option>
+
           </select>
         </div>
 
@@ -126,17 +132,16 @@ function FormularioAcademico({
             placeholder="Ingrese el título"
             value={datos.titulo || ""}
             onChange={(e) =>
-              actualizar("titulo", e.target.value)
+              actualizar(
+                "titulo",
+                e.target.value
+              )
             }
           />
-          {errores.titulo && (
-            <span className="error">
-              {errores.titulo}
-            </span>
-          )}
+
         </div>
 
-        <div className="grupo cursos">
+        <div className="grupo">
 
           <label>Cursos Realizados</label>
 
@@ -144,7 +149,7 @@ function FormularioAcademico({
 
             <input
               type="text"
-              placeholder="Ejemplo: React"
+              placeholder="Ingrese un curso"
               value={nuevoCurso}
               onChange={(e) =>
                 setNuevoCurso(e.target.value)
@@ -190,12 +195,6 @@ function FormularioAcademico({
 
           </div>
 
-          {errores.cursos && (
-            <span className="error">
-              {errores.cursos}
-            </span>
-          )}
-
         </div>
 
         <div className="grupo">
@@ -212,12 +211,6 @@ function FormularioAcademico({
               )
             }
           />
-
-          {errores.institucion && (
-            <span className="error">
-              {errores.institucion}
-            </span>
-          )}
 
         </div>
 
@@ -238,14 +231,7 @@ function FormularioAcademico({
             }
           />
 
-          {errores.graduacion && (
-            <span className="error">
-              {errores.graduacion}
-            </span>
-          )}
-
         </div>
-
 
         <button
           type="button"
@@ -253,7 +239,6 @@ function FormularioAcademico({
         >
           Anterior
         </button>
-
 
         <button type="submit">
           Siguiente

@@ -2,6 +2,7 @@ function VistaPrevia({
   datos = {},
   academico = {},
   experiencia = {},
+  guardarhojavida,
   anterior
 }) {
   const campo = (etiqueta, valor) => (
@@ -88,6 +89,12 @@ function VistaPrevia({
         onClick={anterior}
       >
         Anterior
+      </button>
+      <button 
+      type="button"
+      onClick={guardarhojavida}
+      >
+        Guardar hoja de vida
       </button>
 
     </div>

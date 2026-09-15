@@ -14,7 +14,64 @@ function App() {
   const [datos, setDatos] = useState({});
   const [academico, setAcademico] = useState({});
   const [experiencia, setExperiencia] = useState([]);
+  const [idHojaVida, setIdHojaVida] = useState(null);
 
+  //conectar react con flask
+  const guardarhojavida = async () => {
+    
+    try{
+
+      const datosapi = {
+        nombre:datos.nombre,
+        edad:datos.edad,
+        ciudad:datos.ciudad,
+        correo:datos.correo,
+        fotografia:datos.fotografia,
+        programa:datos.programa,
+        ficha:datos.ficha,
+        jornada:datos.jornada
+        /*nivel: datos.nivel,
+        institucion: datos.institucion,
+        titulo: datos.titulo,
+        anio: datos.anio,
+        cursos: datos.cursos,
+
+        experiencias: datos.experiencias,*/
+      };
+
+      const respuesta = await fetch(
+          "http://127.0.0.1:5000/api/registrohv",
+        {
+          method:"POST",
+          headers:{
+            "Content-type":"application/json"
+          },
+
+          body: JSON.stringify(datosapi),
+
+        });
+      if (!respuesta.ok) {
+        const error = await respuesta.text();
+        console.error("Error del servidor:", error);
+        return;
+      }
+
+      const resultado = await respuesta.json();
+
+      setidHojaVida(resultado.id)
+
+      console.log("respuesta realizada", resultado);
+      console.log("Id de la hoja de vida guardado", resultado.id);
+
+
+
+
+    }catch (error){
+      console.error(
+        "error al conectar con flask",error
+      );
+    }
+  };
   return (
     <div className="contenedor">
 
@@ -50,6 +107,7 @@ function App() {
           academico={academico}
           experiencia={experiencia}
           anterior={() => setPaso(3)}
+          guardarhojavida={guardarhojavida}
         />
       )}
 
