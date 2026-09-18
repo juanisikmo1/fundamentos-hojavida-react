@@ -18,60 +18,114 @@ function App() {
 
   //conectar react con flask
   const guardarhojavida = async () => {
-    
-    try{
 
-      const datosapi = {
-        nombre:datos.nombre,
-        edad:datos.edad,
-        ciudad:datos.ciudad,
-        correo:datos.correo,
-        fotografia:datos.fotografia,
-        programa:datos.programa,
-        ficha:datos.ficha,
-        jornada:datos.jornada
-        /*nivel: datos.nivel,
-        institucion: datos.institucion,
-        titulo: datos.titulo,
-        anio: datos.anio,
-        cursos: datos.cursos,
+  try {
 
-        experiencias: datos.experiencias,*/
-      };
+    // 1. Guardar datos personales
+    const datosapi = {
+      nombre: datos.nombre,
+      edad: datos.edad,
+      ciudad: datos.ciudad,
+      correo: datos.correo,
+      fotografia: datos.fotografia,
+      programa: datos.programa,
+      ficha: datos.ficha,
+      jornada: datos.jornada
+    };
 
-      const respuesta = await fetch(
-          "http://127.0.0.1:5000/api/registrohv",
-        {
-          method:"POST",
-          headers:{
-            "Content-type":"application/json"
-          },
-
-          body: JSON.stringify(datosapi),
-
-        });
-      if (!respuesta.ok) {
-        const error = await respuesta.text();
-        console.error("Error del servidor:", error);
-        return;
+    const respuesta = await fetch(
+      "http://127.0.0.1:5000/api/registrohv",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(datosapi)
       }
+    );
 
-      const resultado = await respuesta.json();
+    const resultado = await respuesta.json();
 
-      setidHojaVida(resultado.id)
-
-      console.log("respuesta realizada", resultado);
-      console.log("Id de la hoja de vida guardado", resultado.id);
-
-
-
-
-    }catch (error){
-      console.error(
-        "error al conectar con flask",error
-      );
+    if (!respuesta.ok) {
+      alert(resultado.mensaje);
+      return;
     }
-  };
+
+    // Guardamos el ID de la hoja de vida
+    const id = resultado.id;
+
+    setIdHojaVida(id);
+
+    console.log("Hoja de vida creada con ID:", id);
+
+
+    // 2. Guardar información académica
+    const estudio = {
+      nivel: academico.nivel,
+      institucion: academico.institucion,
+      titulo: academico.titulo,
+      anio_graduacion: Number(academico.graduacion)
+    };
+
+    const respuestaEstudio = await fetch(
+      `http://127.0.0.1:5000/api/hojas-vida/${id}/estudios`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(estudio)
+      }
+    );
+
+    const resultadoEstudio = await respuestaEstudio.json();
+
+    if (!respuestaEstudio.ok) {
+      alert(resultadoEstudio.mensaje);
+      return;
+    }
+
+    console.log("Estudio guardado:", resultadoEstudio);
+
+
+    // 3. Guardar los cursos
+    if (academico.cursos && academico.cursos.length > 0) {
+
+      for (const curso of academico.cursos) {
+
+        const respuestaCurso = await fetch(
+          `http://127.0.0.1:5000/api/hojas-vida/${id}/cursos`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              nombre: curso
+            })
+          }
+        );
+
+        const resultadoCurso = await respuestaCurso.json();
+
+        if (!respuestaCurso.ok) {
+          alert(resultadoCurso.mensaje);
+          return;
+        }
+
+        console.log("Curso guardado:", resultadoCurso);
+      }
+    }
+
+    alert("Hoja de vida e información académica guardadas correctamente");
+
+  } catch (error) {
+
+    console.error("Error al conectar con Flask:", error);
+
+    alert("No se pudo conectar con el servidor");
+  }
+};
   return (
     <div className="contenedor">
 
